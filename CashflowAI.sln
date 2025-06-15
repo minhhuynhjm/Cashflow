@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CashflowAI.API", "CashflowAI.API\CashflowAI.API.csproj", "{F45945CD-0C83-483F-B124-AD74C1FE38A5}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CashflowAI.Web", "CashflowAI.Web\CashflowAI.Web.csproj", "{93A026F5-C41F-48B9-88B2-57078FE94FB0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CashflowAI.Domain", "CashflowAI.Domain\CashflowAI.Domain.csproj", "{D740517D-C236-400A-9067-B59ADD40958B}"
@@ -16,14 +14,7 @@ Global
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F45945CD-0C83-483F-B124-AD74C1FE38A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F45945CD-0C83-483F-B124-AD74C1FE38A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F45945CD-0C83-483F-B124-AD74C1FE38A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F45945CD-0C83-483F-B124-AD74C1FE38A5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{93A026F5-C41F-48B9-88B2-57078FE94FB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{93A026F5-C41F-48B9-88B2-57078FE94FB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93A026F5-C41F-48B9-88B2-57078FE94FB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -36,5 +27,8 @@ Global
 		{2FBA26C4-226C-4292-9469-67EE5429052F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FBA26C4-226C-4292-9469-67EE5429052F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FBA26C4-226C-4292-9469-67EE5429052F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
