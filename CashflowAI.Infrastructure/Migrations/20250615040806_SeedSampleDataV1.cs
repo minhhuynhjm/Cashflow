@@ -20,7 +20,7 @@ namespace CashflowAI.Infrastructure.Migrations
             int[] categoryIds = new int[24];
             for (int i = 0; i < 24; i++) categoryIds[i] = i + 1;
 
-            for (int i = 0; i < 10000; i++)
+            for (int i = 0; i < 5000; i++)
             {
                 var userId = userIds[rand.Next(userIds.Length)];
                 var categoryId = categoryIds[rand.Next(categoryIds.Length)];
