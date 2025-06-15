@@ -1,0 +1,389 @@
+@using CashflowAI.Domain.DTOs
+@model IEnumerable<CategoryDto>
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<div class="header">
+    <h2 class="text-2xl font-bold text-gray-800">Categories</h2>
+    <div class="flex items-center space-x-4 mb-4">
+        <button class="btn btn-primary" onclick="openAddCategoryModal()">
+            <i class="fas fa-plus mr-2"></i>New Category
+        </button>
+    </div>
+</div>
+
+<!-- Income Categories -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h3 class="card-title">Income Categories</h3>
+    </div>
+    <div class="card-body">
+        <div class="row" id="incomeCategories">
+            @foreach (var category in Model.Where(c => c.Type == "Income"))
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="category-card" style="background-color: @category.Color + '10'">
+                        <div class="d-flex align-items-center">
+                            <div class="category-icon" style="background-color: @category.Color">
+                                <i class="fas fa-@category.Icon"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h4 class="mb-0">@category.Name</h4>
+                                <p class="text-muted mb-0">@category.Description</p>
+                            </div>
+                            <div class="ms-auto">
+                                <button class="btn btn-sm btn-outline-primary" onclick="editCategory(@category.Id)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory(@category.Id)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Expense Categories -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Expense Categories</h3>
+    </div>
+    <div class="card-body">
+        <div class="row" id="expenseCategories">
+            @foreach (var category in Model.Where(c => c.Type == "Expense"))
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="category-card" style="background-color: @category.Color + '10'">
+                        <div class="d-flex align-items-center">
+                            <div class="category-icon" style="background-color: @category.Color">
+                                <i class="fas fa-@category.Icon"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h4 class="mb-0">@category.Name</h4>
+                                <p class="text-muted mb-0">@category.Description</p>
+                            </div>
+                            <div class="ms-auto">
+                                <button class="btn btn-sm btn-outline-primary" onclick="editCategory(@category.Id)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory(@category.Id)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="categoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="categoryForm">
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" name="Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <input type="text" class="form-control" name="Description" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Type</label>
+                        <select class="form-select" name="Type" required>
+                            <option value="Income">Income</option>
+                            <option value="Expense">Expense</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Icon</label>
+                        <select class="form-select" name="Icon" required>
+                            <option value="money-bill-wave">Money Bill</option>
+                            <option value="home">Home</option>
+                            <option value="utensils">Food</option>
+                            <option value="car">Car</option>
+                            <option value="gift">Gift</option>
+                            <option value="shopping-cart">Shopping</option>
+                            <option value="film">Entertainment</option>
+                            <option value="file-invoice">Bills</option>
+                            <option value="heartbeat">Health</option>
+                            <option value="graduation-cap">Education</option>
+                            <option value="plane">Travel</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Color</label>
+                        <select class="form-select" name="Color" required>
+                            <option value="#4CAF50">Green</option>
+                            <option value="#2196F3">Blue</option>
+                            <option value="#FF9800">Orange</option>
+                            <option value="#F44336">Red</option>
+                            <option value="#9C27B0">Purple</option>
+                            <option value="#607D8B">Gray</option>
+                            <option value="#E91E63">Pink</option>
+                            <option value="#795548">Brown</option>
+                            <option value="#00BCD4">Cyan</option>
+                            <option value="#FFC107">Yellow</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveCategory()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Category Confirm Modal -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this category?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteCategoryBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editCategoryForm">
+                    <input type="hidden" name="Id" id="editCategoryId" />
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" name="Name" id="editCategoryName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <input type="text" class="form-control" name="Description" id="editCategoryDescription" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Type</label>
+                        <select class="form-select" name="Type" id="editCategoryType" required>
+                            <option value="Income">Income</option>
+                            <option value="Expense">Expense</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Icon</label>
+                        <select class="form-select" name="Icon" id="editCategoryIcon" required>
+                            <option value="money-bill-wave">Money Bill</option>
+                            <option value="home">Home</option>
+                            <option value="utensils">Food</option>
+                            <option value="car">Car</option>
+                            <option value="gift">Gift</option>
+                            <option value="shopping-cart">Shopping</option>
+                            <option value="film">Entertainment</option>
+                            <option value="file-invoice">Bills</option>
+                            <option value="heartbeat">Health</option>
+                            <option value="graduation-cap">Education</option>
+                            <option value="plane">Travel</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Color</label>
+                        <select class="form-select" name="Color" id="editCategoryColor" required>
+                            <option value="#4CAF50">Green</option>
+                            <option value="#2196F3">Blue</option>
+                            <option value="#FF9800">Orange</option>
+                            <option value="#F44336">Red</option>
+                            <option value="#9C27B0">Purple</option>
+                            <option value="#607D8B">Gray</option>
+                            <option value="#E91E63">Pink</option>
+                            <option value="#795548">Brown</option>
+                            <option value="#00BCD4">Cyan</option>
+                            <option value="#FFC107">Yellow</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveEditCategory()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openAddCategoryModal() {
+            const modal = new bootstrap.Modal(document.getElementById('categoryModal'));
+            modal.show();
+        }
+
+        function editCategory(id) {
+            fetch(`/api/categories/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const c = data.data;
+                        document.getElementById('editCategoryId').value = c.id;
+                        document.getElementById('editCategoryName').value = c.name;
+                        document.getElementById('editCategoryDescription').value = c.description;
+                        document.getElementById('editCategoryType').value = c.type;
+                        document.getElementById('editCategoryIcon').value = c.icon;
+                        document.getElementById('editCategoryColor').value = c.color;
+                        const modal = new bootstrap.Modal(document.getElementById('editCategoryModal'));
+                        modal.show();
+                    } else {
+                        alert('Error loading category: ' + data.message);
+                    }
+                });
+        }
+
+        let categoryToDeleteId = null;
+        function deleteCategory(id) {
+            categoryToDeleteId = id;
+            const modal = new bootstrap.Modal(document.getElementById('deleteCategoryModal'));
+            modal.show();
+        }
+        document.getElementById('confirmDeleteCategoryBtn').onclick = function() {
+            fetch(`/api/categories/${categoryToDeleteId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error deleting category: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error deleting category');
+            });
+            bootstrap.Modal.getInstance(document.getElementById('deleteCategoryModal')).hide();
+        };
+
+        function saveCategory() {
+            const form = document.getElementById('categoryForm');
+            const formData = new FormData(form);
+            
+            fetch('/api/categories', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error saving category: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error saving category');
+            });
+        }
+
+        function saveEditCategory() {
+            const id = document.getElementById('editCategoryId').value;
+            const dto = {
+                Name: document.getElementById('editCategoryName').value,
+                Description: document.getElementById('editCategoryDescription').value,
+                Type: document.getElementById('editCategoryType').value,
+                Icon: document.getElementById('editCategoryIcon').value,
+                Color: document.getElementById('editCategoryColor').value
+            };
+            fetch(`/api/categories/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dto)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error updating category: ' + data.message);
+                }
+            });
+        }
+
+        // Refresh categories list
+        function refreshCategories() {
+            fetch('/api/categories')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const incomeCategories = document.getElementById('incomeCategories');
+                        const expenseCategories = document.getElementById('expenseCategories');
+                        
+                        incomeCategories.innerHTML = '';
+                        expenseCategories.innerHTML = '';
+
+                        data.data.forEach(category => {
+                            const categoryHtml = `
+                                <div class="col-md-4 mb-4">
+                                    <div class="category-card" style="background-color: ${category.color}10">
+                                        <div class="d-flex align-items-center">
+                                            <div class="category-icon" style="background-color: ${category.color}">
+                                                <i class="fas fa-${category.icon}"></i>
+                                            </div>
+                                            <div class="ms-3">
+                                                <h4 class="mb-0">${category.name}</h4>
+                                                <p class="text-muted mb-0">${category.description}</p>
+                                            </div>
+                                            <div class="ms-auto">
+                                                <button class="btn btn-sm btn-outline-primary" onclick="editCategory(${category.id})">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory(${category.id})">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+
+                            if (category.type === 'Income') {
+                                incomeCategories.innerHTML += categoryHtml;
+                            } else {
+                                expenseCategories.innerHTML += categoryHtml;
+                            }
+                        });
+                    } else {
+                        alert('Error loading categories: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error loading categories');
+                });
+        }
+    </script>
+} 

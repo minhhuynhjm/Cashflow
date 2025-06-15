@@ -1,0 +1,219 @@
+﻿@model CashflowAI.Web.Models.HomeViewModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to CashflowAI</h1>
+    <p class="lead">Your personal finance management assistant</p>
+</div>
+
+<!-- Financial Overview -->
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total Income</h5>
+                <h2 class="text-success">$@Model.TotalIncome.ToString("N2")</h2>
+                <p class="text-muted">This month</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total Expenses</h5>
+                <h2 class="text-danger">$@Model.TotalExpenses.ToString("N2")</h2>
+                <p class="text-muted">This month</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Balance</h5>
+                <h2 class="@(Model.Balance >= 0 ? "text-success" : "text-danger")">$@Model.Balance.ToString("N2")</h2>
+                <p class="text-muted">This month</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Transactions -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Recent Transactions</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var transaction in Model.RecentTransactions)
+                    {
+                        <tr>
+                            <td>@transaction.TransactionDate.ToString("yyyy-MM-dd")</td>
+                            <td>@transaction.Description</td>
+                            <td>
+                                <span class="badge" style="background-color: @transaction.Category.Color">
+                                    @transaction.Category.Name
+                                </span>
+                            </td>
+                            <td class="@(transaction.Type == "Income" ? "text-success" : "text-danger")">
+                                @(transaction.Type == "Income" ? "+" : "-")$@Math.Abs(transaction.Amount).ToString("N2")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Transactions</h5>
+                <p class="card-text">Manage your income and expenses</p>
+                <a asp-controller="Home" asp-action="Transactions" class="btn btn-primary">View Transactions</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Categories</h5>
+                <p class="card-text">Organize your transactions</p>
+                <a asp-controller="Home" asp-action="Categories" class="btn btn-primary">View Categories</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Reports</h5>
+                <p class="card-text">Analyze your spending patterns</p>
+                <a asp-controller="Home" asp-action="Reports" class="btn btn-primary">View Reports</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dashboard Charts -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Income vs Expenses (Pie Chart)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Monthly Trend (Bar Chart)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Daily Cashflow (Line Chart)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const now = new Date();
+const year = now.getFullYear();
+const month = now.getMonth() + 1;
+
+// Pie Chart: Income vs Expenses
+fetch(`/api/transactions/stats/summary?year=${year}&month=${month}`)
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            new Chart(document.getElementById('pieChart').getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: ['Income', 'Expenses'],
+                    datasets: [{
+                        data: [data.income, Math.abs(data.expenses)],
+                        backgroundColor: ['#4CAF50', '#F44336']
+                    }]
+                }
+            });
+        }
+    });
+
+// Bar Chart: Monthly Trend
+fetch(`/api/transactions/stats/monthly?year=${year}`)
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            new Chart(document.getElementById('barChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [
+                        {
+                            label: 'Income',
+                            data: data.income,
+                            backgroundColor: '#4CAF50'
+                        },
+                        {
+                            label: 'Expenses',
+                            data: data.expenses.map(x => Math.abs(x)),
+                            backgroundColor: '#F44336'
+                        }
+                    ]
+                }
+            });
+        }
+    });
+
+// Line Chart: Daily Cashflow
+fetch(`/api/transactions/stats/daily?year=${year}&month=${month}`)
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const days = Array.from({length: data.net.length}, (_, i) => (i+1).toString().padStart(2, '0'));
+            new Chart(document.getElementById('lineChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: days,
+                    datasets: [{
+                        label: 'Net Cashflow',
+                        data: data.net,
+                        borderColor: '#2196F3',
+                        fill: false
+                    }]
+                }
+            });
+        }
+    });
+</script>
+}
